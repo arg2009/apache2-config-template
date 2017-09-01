@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Defaults
+DEFAULT_COUNTRY_CODE="AU"
+DEFAULT_CERTIFICATE_PERIOD="3650"
+DEFAULT_KEY_SIZE="4096"
+
+# Arguments
+COMMON_NAME=$1
+COUNTRY_CODE=$2
+CERTIFICATE_PERIOD=$3
+KEY_SIZE=$4
+
+
+USAGE="Usage: $0 COMMON_NAME [COUNTRY CODE] [CERTIFICATE PERIOD] [KEY SIZE]\nE.g. $0 \"my.development.domain\" \"$DEFAULT_COUNTRY_CODE\" $DEFAULT_CERTIFICATE_PERIOD $DEFAULT_KEY_SIZE\n"
+
+if [ -z "$COMMON_NAME" ]; then
+    printf "$USAGE"
+    exit 1
+fi
+
+if [ -z "$COUNTRY_CODE" ]; then
+    COUNTRY_CODE="$DEFAULT_COUNTRY_CODE"
+fi
+if [ -z "$CERTIFICATE_PERIOD" ]; then
+    CERTIFICATE_PERIOD="$DEFAULT_CERTIFICATE_PERIOD"
+fi
+if [ -z "$KEY_SIZE" ]; then
+    KEY_SIZE="$DEFAULT_KEY_SIZE"
+fi
+
+mkdir ${COMMON_NAME}
+openssl req -x509 -nodes -batch -subj "/C=$COUNTRY_CODE/CN=$COMMON_NAME" -newkey "rsa:$KEY_SIZE" -keyout "$COMMON_NAME/server.key" -out "$COMMON_NAME/server.crt" -days "$CERTIFICATE_PERIOD"
